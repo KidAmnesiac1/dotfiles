@@ -4,7 +4,7 @@ set -e
 ARCH=$(uname -m)
 OS_TYPE=$(uname)
 
-LAZYGIT_VERSION=
+LAZYGIT_VERSION=0.59.0
 
 install_nvim() {
     command -v nvim >/dev/null && return
@@ -26,7 +26,7 @@ install_nvim() {
 
 install_k9s() {
     command -v k9s >/dev/null && return
-    command -v kubectl >/dev/null || return
+    command -v kubectl >/dev/null || return 0
     
     if [[ "$OS_TYPE" == "Darwin" ]]; then
         K9S_OS="Darwin"
@@ -67,6 +67,25 @@ install_uv() {
   curl -LsSf https://astral.sh/uv/install.sh | sh
 }
 
+resolve_lazygit_version() {
+    if [[ -n "$LAZYGIT_VERSION" ]]; then
+        echo "$LAZYGIT_VERSION"
+        return 0
+    fi
+
+    local latest_url version
+    latest_url=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/jesseduffield/lazygit/releases/latest || true)
+    version=$(sed -E -n 's#.*/tag/v([0-9]+\.[0-9]+\.[0-9]+)$#\1#p' <<<"$latest_url")
+
+    if [[ -n "$version" ]]; then
+        echo "$version"
+        return 0
+    fi
+
+    echo "Could not determine latest lazygit release; skipping lazygit install." >&2
+    return 1
+}
+
 install_lazygit() {
 
     command -v lazygit >/dev/null && return
@@ -80,8 +99,14 @@ install_lazygit() {
         return
     fi
     
-    LAZYGIT_PACKAGE=https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/lazygit_$LAZYGIT_VERSION_$LAZYGIT_OS_$ARCH.tar.gz
-    curl -Lo /tmp/lazygit.tar.gz $LAZYGIT_PACKAGE
+    local lazygit_version
+    lazygit_version="$(resolve_lazygit_version)" || return 0
+
+    LAZYGIT_PACKAGE="https://github.com/jesseduffield/lazygit/releases/download/v${lazygit_version}/lazygit_${lazygit_version}_${LAZYGIT_OS}_${ARCH}.tar.gz"
+    curl -fL -o /tmp/lazygit.tar.gz "$LAZYGIT_PACKAGE" || {
+        echo "Failed to download lazygit from ${LAZYGIT_PACKAGE}; skipping lazygit install." >&2
+        return 0
+    }
 
     tar xf /tmp/lazygit.tar.gz lazygit
     sudo install lazygit -D -t /usr/local/bin/
