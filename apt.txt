@@ -2,7 +2,6 @@ fd-find
 fzf
 git
 htop
-lazygit
 ripgrep
 stow
 tmux

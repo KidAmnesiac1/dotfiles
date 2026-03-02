@@ -4,6 +4,8 @@ set -e
 ARCH=$(uname -m)
 OS_TYPE=$(uname)
 
+LAZYGIT_VERSION=
+
 install_nvim() {
     command -v nvim >/dev/null && return
 
@@ -65,7 +67,30 @@ install_uv() {
   curl -LsSf https://astral.sh/uv/install.sh | sh
 }
 
+install_lazygit() {
+
+    command -v lazygit >/dev/null && return
+    
+    if [[ "$OS_TYPE" == "Darwin" ]]; then
+        LAZYGIT_OS="darwin"
+    elif [[ "$OS_TYPE" == "Linux" ]]; then
+        LAZYGIT_OS="linux"
+    else
+        echo "Unsupported OS for k9s installation"
+        return
+    fi
+    
+    LAZYGIT_PACKAGE=https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/lazygit_$LAZYGIT_VERSION_$LAZYGIT_OS_$ARCH.tar.gz
+    curl -Lo /tmp/lazygit.tar.gz $LAZYGIT_PACKAGE
+
+    tar xf /tmp/lazygit.tar.gz lazygit
+    sudo install lazygit -D -t /usr/local/bin/
+    rm -rf /tmp/lazygit.tar.gz
+
+}
+
 install_nvim
 install_starship
 install_uv
 install_k9s
+install_lazygit
