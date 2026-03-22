@@ -8,5 +8,5 @@ mkdir -p -- "${_zcompdump:h}" 2>/dev/null || true
 compinit -d "$_zcompdump"
 
 if command -v kubectl >/dev/null; then
-  compdef k=kubectl
+  (( $+functions[_kubectl] )) && compdef _kubectl k
 fi

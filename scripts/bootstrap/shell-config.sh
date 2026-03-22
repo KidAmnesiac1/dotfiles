@@ -37,6 +37,7 @@ backup_and_stow_package() {
 
   if [ "$pkg" = "zsh" ]; then
     maybe_backup_conflict "$HOME/.zshenv" "$dotfiles_root/shell-config/zsh/.zshenv"
+    maybe_backup_conflict "$HOME/.zshrc" "$dotfiles_root/shell-config/zsh/.zshrc"
     stow -d shell-config -t "$HOME" zsh
     return 0
   fi
