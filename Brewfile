@@ -1,6 +1,7 @@
 brew "fd"
 brew "fzf"
 brew "git"
+brew "git-delta"
 brew "htop"
 brew "lazygit"
 brew "tree-sitter-cli"

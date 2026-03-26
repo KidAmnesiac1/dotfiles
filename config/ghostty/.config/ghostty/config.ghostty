@@ -1,0 +1,3 @@
+font-family = JetBrains Mono
+
+shell-integration-features = ssh-env,ssh-terminfo
