@@ -48,7 +48,7 @@ stow_all
 
 bash ./scripts/bootstrap/lazyvim-requirements.sh
 bash ./scripts/curl-installs.sh
-bash ./scripts/install-fonts.sh
+# bash ./scripts/install-fonts.sh
 
 bash ./scripts/bootstrap/git-config.sh
 
