@@ -5,5 +5,3 @@ ZSH_SHELL_DIR="$HOME/.config/shells/zsh"
 if [ -f "$ZSH_SHELL_DIR/init.zsh" ]; then
   . "$ZSH_SHELL_DIR/init.zsh"
 fi
-
-. "$HOME/.local/bin/env"

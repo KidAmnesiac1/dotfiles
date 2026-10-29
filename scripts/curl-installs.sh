@@ -64,7 +64,9 @@ install_starship() {
 
 install_uv() {
   command -v uv >/dev/null && return
-  curl -LsSf https://astral.sh/uv/install.sh | sh
+  # PATH is handled by config/shells/*/env.*; stop the installer editing rc files
+  # (they are symlinks into this repo, so its edits leave the checkout dirty).
+  curl -LsSf https://astral.sh/uv/install.sh | env UV_NO_MODIFY_PATH=1 sh
 }
 
 resolve_lazygit_version() {

@@ -7,6 +7,13 @@ export VISUAL="$EDITOR"
 # Add a personal bin directory early on the PATH.
 export PATH="$HOME/bin:$PATH"
 
+# Per-user tools (uv, and installers that default to ~/.local/bin) live here.
+# Add it once, so installers don't need to append PATH lines to the rc files.
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
 # Load user-specific secrets if present (not tracked in git).
 _dotfiles_env_local="$HOME/.env.local"
 if [ -f "$_dotfiles_env_local" ]; then
