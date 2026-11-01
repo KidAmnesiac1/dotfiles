@@ -172,3 +172,28 @@ stow_all() {
     stow_root "$root"
   done
 }
+
+# Run a command as root: directly when already root, otherwise through sudo.
+as_root() {
+  if [ "$(id -u)" -eq 0 ]; then
+    "$@"
+  else
+    sudo "$@"
+  fi
+}
+
+# Numeric uid that owns a path (GNU stat on Linux, BSD stat on macOS).
+path_owner_uid() {
+  stat -c %u "$1" 2>/dev/null || stat -f %u "$1"
+}
+
+# Refuse to write to $HOME as root when $HOME belongs to someone else (e.g. sudo -E, or
+# HOME=/home/user set by a provisioning tool): everything created there would be root-owned.
+refuse_root_in_foreign_home() {
+  if [ "$(id -u)" -eq 0 ] && [ "$(path_owner_uid "$HOME")" != "0" ]; then
+    echo "Refusing to set up $HOME as root: it belongs to another user, and the files" >&2
+    echo "created there would be owned by root. Run this as that user instead, or run" >&2
+    echo "'bootstrap.sh --system' as root and 'bootstrap.sh --user' as the user." >&2
+    exit 1
+  fi
+}
