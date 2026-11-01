@@ -25,14 +25,24 @@ Usage: bootstrap.sh [--system | --user]
 EOF
 }
 
-mode="all"
-case "${1:-}" in
-  "") ;;
-  --system) mode="system" ;;
-  --user) mode="user" ;;
-  -h|--help) usage; exit 0 ;;
-  *) echo "Unknown argument: $1" >&2; usage >&2; exit 2 ;;
-esac
+want_system=0
+want_user=0
+for arg in "$@"; do
+  case "$arg" in
+    --system) want_system=1 ;;
+    --user) want_user=1 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "Unknown argument: $arg" >&2; usage >&2; exit 2 ;;
+  esac
+done
+# No flag, or both flags, means everything.
+if [ "$want_system" -eq "$want_user" ]; then
+  mode="all"
+elif [ "$want_system" -eq 1 ]; then
+  mode="system"
+else
+  mode="user"
+fi
 
 cd "$(dirname "$0")"
 source scripts/bootstrap/lib.sh
